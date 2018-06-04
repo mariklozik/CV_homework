@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> Find min. path in graph | CoreValue homework </title>
+</head>
+<body>
+
+    Open console to see the result
+
+    <script>
+        // Node : cost 
+        const graph = {
+            begin: {A: 5, B: 2},
+            A: {C: 4, D: 2},
+            B: {A: 8, D: 7},
+            C: {D: 6, end: 3},
+            D: {end: 1},
+            end: {}
+        };
+        
+        // return lowest node "price"
+        const lowestCostUnit = function(costs, processed) {
+            return Object.keys(costs).reduce((lowest, unit) => {
+                if (lowest === null || costs[unit] < costs[lowest]) {
+                    if (!processed.includes(unit)) {
+                        lowest = unit;
+                    }
+                }
+                return lowest;
+            }, null);
+        };
+
+        // return minimal path
+        const findMinPath = function(graph) {
+
+            const costs = Object.assign({end: Infinity}, graph.begin);
+
+            const parents = {end: null};
+            for (let child in graph.begin) {
+                parents[child] = 'begin';
+            }
+
+            const processed = [];
+
+            let unit = lowestCostUnit(costs, processed);
+
+            while (unit) {
+                let cost = costs[unit];
+                let children = graph[unit];
+                for (let n in children) {
+                    let newCost = cost + children[n];
+                    if (!costs[n]) {
+                        costs[n] = newCost;
+                        parents[n] = unit;
+                    }
+                    if (costs[n] > newCost) {
+                        costs[n] = newCost;
+                        parents[n] = unit;
+                    }
+                }
+                processed.push(unit);
+                unit = lowestCostUnit(costs, processed);
+            }
+
+            let optimalPath = ['end'];
+            let parent = parents.end;
+            while (parent) {
+                optimalPath.push(parent);
+                parent = parents[parent];
+            }
+            optimalPath.reverse();
+
+            const results = {
+                distance: costs.end,
+                path: optimalPath
+            };
+
+            return results;
+        };
+
+        console.log(findMinPath(graph));
+    </script>
+
+
+</body>
+</html>
